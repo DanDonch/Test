@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BitmexBot - Orders</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/orders.css">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var sortOrder = {};
+
+        function isNumeric(value) {
+            return /^\d+$/.test(value);
+        }
+
+        function sortByNumericColumn(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("orderTable");
+            switching = true;
+
+            var headers = table.getElementsByTagName("th");
+            for (var j = 0; j < headers.length; j++) {
+                headers[j].innerHTML = headers[j].innerHTML.replace("▲", "").replace("▼", "");
+            }
+
+            while (switching) {
+                switching = false;
+                rows = table.getElementsByTagName("tr");
+
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("td")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+                    var xValue = parseFloat(x.innerHTML.replace(/,/g, ''));
+                    var yValue = parseFloat(y.innerHTML.replace(/,/g, ''));
+
+                    if (!sortOrder[columnIndex] || sortOrder[columnIndex] === 'desc') {
+                        if (xValue > yValue) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (xValue < yValue) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+
+            sortOrder[columnIndex] = (sortOrder[columnIndex] === 'asc') ? 'desc' : 'asc';
+            headers[columnIndex].innerHTML += (sortOrder[columnIndex] === 'asc') ? "▲" : "▼";
+        }
+
+        function sortTable(columnIndex) {
+            if (columnIndex === 1 || columnIndex === 2) {
+                sortByNumericColumn(columnIndex);
+            } else {
+                var table, rows, switching, i, x, y, shouldSwitch;
+                table = document.getElementById("orderTable");
+                switching = true;
+
+                var headers = table.getElementsByTagName("th");
+                for (var j = 0; j < headers.length; j++) {
+                    headers[j].innerHTML = headers[j].innerHTML.replace("▲", "").replace("▼", "");
+                }
+
+                while (switching) {
+                    switching = false;
+                    rows = table.getElementsByTagName("tr");
+
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("td")[columnIndex];
+                        y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+                        var xValue = x.innerHTML.trim();
+                        var yValue = y.innerHTML.trim();
+
+                        if (!sortOrder[columnIndex] || sortOrder[columnIndex] === 'desc') {
+                            if (xValue > yValue) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else {
+                            if (xValue < yValue) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+
+                sortOrder[columnIndex] = (sortOrder[columnIndex] === 'asc') ? 'desc' : 'asc';
+                headers[columnIndex].innerHTML += (sortOrder[columnIndex] === 'asc') ? "▲" : "▼";
+            }
+        }
+        /*]]>*/
+    </script>
+
+
+</head>
+
+<body class="body">
+<div class="container mt-2">
+    <div>
+        <h1 class="h1">Orders</h1>
+    </div>
+
+    <form class="form" th:if="${errorMessage == null}" action="/orders" method="get">
+        <a th:href="@{/}" class="btn btn-primary go-back-button">Go back</a>
+
+        <button class="btn btn-primary" type="submit">Refresh</button>
+    </form>
+
+
+    <table class="table mt-2" th:if="${orderList}" id="orderTable">
+        <thead>
+        <tr>
+            <th th:onclick="sortTable(0)">Side</th>
+            <th th:onclick="sortTable(1)">Order Quantity</th>
+            <th th:onclick="sortTable(2)">Price</th>
+            <th th:onclick="sortTable(3)">Order Status</th>
+            <th th:onclick="sortTable(4)">Timestamp</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orderList}" th:class="${order.side == 'Buy' ? 'buy-row' : (order.side == 'Sell' ? 'sell-row' : '')}">
+            <td th:text="${order.side}"></td>
+            <td th:text="${order.orderQty}"></td>
+            <td th:text="${order.price}"></td>
+            <td th:text="${order.ordStatus}"></td>
+            <td th:text="${order.timestamp}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${errorMessage}" class="error-message">
+        <p th:text="${errorMessage}"></p>
+        <button th:if="${goBackButton}" onclick="window.location.href='/'" class="btn btn-primary">Go back</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

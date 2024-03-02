@@ -1,0 +1,65 @@
+.body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: url('../images/background.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.container {
+    width: 470px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.90);
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    height: 100%; /* Добавьте это свойство */
+}
+
+.h1 {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    height: 20px;
+    padding: 5px;
+}
+
+.btn-split {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn-split button {
+    flex: 1;
+}
+
+.sub-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.error-message {
+    color: #d9534f;
+}
+
+.ok-message {
+    color: #5cb85c;
+}
+
+.auth-section .btn-split {
+    margin-bottom: 5px;
+}
+
+.param-section .btn-split {
+    margin-top: 5px;
+}

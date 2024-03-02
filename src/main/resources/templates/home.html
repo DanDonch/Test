@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BitmexBot</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+</head>
+<body class="body">
+
+<div class="page-container">
+    <div class="container">
+        <h1 class="h1">BitmexBot</h1>
+        <p class="welcome-message mt-1" th:if="${apiKey != null}">
+            Your API Key is <span th:text="${apiKey}"></span>
+            &nbsp;&nbsp;&nbsp;<a th:href="@{/logout}">Logout</a>
+        </p>
+
+        <section class="auth-section">
+            <h2 class="sub-title">API Keys</h2>
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label for="apiKey">Enter API Key</label>
+                    <input type="text" id="apiKey" name="apiKey" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="apiSecretKey">Enter API Secret Key</label>
+                    <input type="text" id="apiSecretKey" name="apiSecretKey" class="form-control" required>
+                </div>
+                <div class="btn-split">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+
+            <form action="/orders" method="get" class="mt-2">
+                <div class="btn-split">
+                    <button type="submit" class="btn btn-primary">View Order History</button>
+                </div>
+            </form>
+
+            <p class="already-message mt-3" th:if="${authStatus == 'already'}">
+                You have already completed the authentication.
+                <span>Do you want to log out? <a th:href="@{/logout}">Logout</a></span>
+            </p>
+            <p class="ok-message mt-3" th:if="${authStatus == 'ok'}">Authentication successful</p>
+            <p class="error-message" th:if="${authStatus == 'failed'}">
+                Authentication failed. Please check your credentials.
+                <br>
+                <span style="color: black;">Don't have an API Key? <a href="https://testnet.bitmex.com/app/apiKeys" target="_blank">Get it here</a></span>
+            </p>
+        </section>
+
+        <section class="param-section mt-3">
+            <h2 class="sub-title">Configuration</h2>
+            <form action="/setup" method="post">
+                <div class="form-group">
+                    <label for="step">Enter Step</label>
+                    <input type="text" id="step" name="step" placeholder="1-100" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="coefficient">Enter Coefficient</label>
+                    <input type="text" id="coefficient" name="coefficient" placeholder="100-1000" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="level">Enter Level</label>
+                    <input type="text" id="level" name="level" placeholder="1-10" class="form-control" required>
+                </div>
+                <div class="btn-split">
+                    <button type="submit" class="btn btn-primary">Set Parameters</button>
+                </div>
+            </form>
+
+            <form th:if="${startStatus == 'ok'}" action="/stop" method="get" class="mt-2">
+                <div class="btn-split">
+                    <button type="submit" class="btn btn-danger stop-button">Stop</button>
+                </div>
+            </form>
+
+            <form th:unless="${startStatus == 'ok'}" action="/start" method="post" class="mt-2">
+                <div class="btn-split">
+                    <button type="submit" class="btn btn-success">Start</button>
+                </div>
+            </form>
+
+            <p class="error-message mt-1" th:if="${configStatus == 'notDigits'}">Enter only digits</p>
+            <p class="error-message mt-1" th:if="${configStatus == 'stepFailed'}">Incorrect step value</p>
+            <p class="error-message mt-1" th:if="${configStatus == 'coefficientFailed'}">Incorrect coefficient value</p>
+            <p class="error-message mt-1" th:if="${configStatus == 'levelFailed'}">Incorrect level value</p>
+            <p class="ok-message mt-1" th:if="${configStatus == 'ok'}">Parameters successfully set</p>
+            <p class="error-message mt-1" th:if="${startStatus == 'authFailed'}">Authentication failed, please try again</p>
+            <p class="error-message mt-1" th:if="${startStatus == 'configFailed'}">Bot parameters are not set. Please set parameters before starting</p>
+            <p class="ok-message mt-1" th:if="${startStatus == 'ok'}">
+                Bot started successfully.
+                <br>
+                <span style="color: black;">You can switch to <a href="https://testnet.bitmex.com/app/trade/XBTUSD" target="_blank">Bitmex</a></span>
+            </p>
+            <p class="ok-message mt-1" th:if="${stopStatus == 'ok'}">
+                Bot was stopped.
+                <br>
+                <span style="color: black">You can <a th:href="@{/cancel}">cancel all active orders</a></span>
+            </p>
+            <p class="ok-message mt-1" th:if="${cancelStatus == 'ok'}">All orders the bot worked with were canceled</p>
+        </section>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        var startStatus = /*[[${startStatus}]]*/ '';
+        if (startStatus === 'ok') {
+            $('.stop-button').show();
+        }
+    });
+</script>
+
+</body>
+</html>
